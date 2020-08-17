@@ -26,6 +26,7 @@ gofmt -w [file_name.go]
 ### การ auto import package
 
 ```bash
+go get golang.org/x/tools/cmd/goimports  # to install
 goimports -w [file_name.go]
 ```
 
@@ -272,3 +273,30 @@ func main() {
   search("dog")
 }
 ```
+
+### pointer
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	num := 0
+	increase1(num)
+	fmt.Printf("before> num : %d\n", num)
+	increase2(&num)
+	fmt.Printf("after> num : %d", num)
+}
+
+func increase1(number int) {
+	number++
+}
+
+func increase2(number *int) {
+	*number++
+}
+
+```
+
+ใช้งานเหมือนในภาษา c เลยยย
