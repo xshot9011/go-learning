@@ -156,32 +156,39 @@ func getFullName(firstName string, lastName string) (string, int) {
 
 ```go
 type human struct {
-  name string
-  age int
+  // Unexported struct fields are invisible to the JSON package.
+  // Export a field by starting it with an uppercase letter.
+  name string // Unexported
+  agr int // Unexported
+  Name string `json:"name"` // Export 
 }
 ```
+
+The underlying reason for this requirement is that the JSON package uses reflect to inspect struct fields. Since reflect doesn't allow access to unexported struct fields, the JSON package can't see their value.
+
+เวลาใช้งานกับการเขียนเว็ปถ้าเราไม่ทำให้เป็น Exported field json จะมองไม่เห็น อันนี้อารมณ์เกือบเหมือนกับ serializer ใน django ที่เรา set attr ของ field นั้นได้ ส่วนนี้ต้องศึกษาเพิ่มเติม
 
 usage
 
 ```go
 type human struct {
-	name string
-	age  int
+	Name string
+	Age  int
 }
 
 func (h human) printInfo2() {  // only human type can access this method
-	fmt.Println(h.name, h.age)
+	fmt.Println(h.Name, h.Age)
 }
 
 func main() {
-	person := human{name: "O", age: 15}
-	person.age = 68
+	person := human{Name: "O", Age: 15}
+	person.Age = 68
 	printInfo1(person)
 	person.printInfo2()
 }
 
 func printInfo1(h human) {
-	fmt.Println(h.name, h.age)
+	fmt.Println(h.Name, h.Age)
 }
 ```
 
