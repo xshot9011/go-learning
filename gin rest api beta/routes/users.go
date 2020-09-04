@@ -12,7 +12,8 @@ import (
 // UserRegistration is made for registration of user
 func UserRegistration(c *gin.Context) {
 	user := models.User{}
-	err := c.ShouldBindJSON(&user)
+	err := c.ShouldBindJSON(&user)  // จะเป็นการ bind ข้อมูลมาเก็บไว้ใน structure โดยใช้คำสั่ง BindJSON
+	//นั้นจะสามารถทำได้ครั้งเดียว นั่นหมายความว่า หาก bind ไปแล้วข้อมูลส่วนนั้นใน request จะหายไปเลย ไม่สามารถ bind ซ้ำได้อีก
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 		return
