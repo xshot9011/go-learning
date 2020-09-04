@@ -1,4 +1,4 @@
-CREATE TABLE Account(id SERIAL UNIQUE, email VARCHAR(255) NOT NULL, is_active BOOLEAN, created TIMESTAMP, updated TIMESTAMP);
+CREATE TABLE Account(id SERIAL UNIQUE, email VARCHAR(255) NOT NULL, password_hash VARCHAR(255), is_active BOOLEAN, created TIMESTAMP, updated TIMESTAMP);
 
 CREATE TABLE Item(id SERIAL UNIQUE, title VARCHAR(255) NOT NULL, notes TEXT, seller_id INTEGER, price_in_cents INTEGER, FOREIGN KEY (seller_id) REFERENCES Account(id) ON DELETE CASCADE, created TIMESTAMP, updated TIMESTAMP);
 
