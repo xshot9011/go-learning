@@ -20,7 +20,7 @@ var (
 // User form
 type User struct {
 	ID              uuid.UUID `json:"id"`
-	Created         time.Time `json:"_"`
+	Created         time.Time `json:"-"`
 	Updated         time.Time `json:"-"`
 	Email           string    `json:"email"`
 	PasswordHash    string    `json:"-"` // use when send info to db
