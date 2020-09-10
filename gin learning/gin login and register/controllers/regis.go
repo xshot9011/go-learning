@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"time"
 	"unicode"
 
 	"github.com/gin-gonic/gin"
@@ -12,19 +11,6 @@ import (
 )
 
 var dbConnect *gorm.DB
-
-// User make for regis and overview
-type User struct {
-	UUID            string    `form:"id"`
-	Fullname        string    `form:"fullname" validate:"required,min=1,max=256"`
-	Email           string    `form:"email" validate:"required,min=4,max=256,email"`
-	Password        string    `form:"password" validate:"required,min=8,eqfield=PasswordConfirm"`
-	PasswordConfirm string    `form:"password_confirm" validate:"required,min=8"`
-	PasswordHash    string    `form:"-"`
-	Salt            string    `form:"-"`
-	Created         time.Time `form:"-"`
-	Updated         time.Time `form:"-"`
-}
 
 // InitiateDB > We are creating an instance of our DB to avoid too many connections.
 func InitiateDB(db *gorm.DB) {
@@ -107,7 +93,10 @@ func isSecurePassword(pass string) bool {
 
 // InsertUserToDatabase > insert validated data and tranform to appropriate form then into database
 func (user *User) InsertUserToDatabase() error {
-	result := 
+	result := dbConnect.Model(User{}).Create(user)
+	if result.Error != nil {
+		return result.Error
+	}
 	return nil
 }
 

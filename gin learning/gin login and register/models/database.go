@@ -13,13 +13,15 @@ import (
 
 // User model for db
 type User struct {
-	UUID         string    `gorm:"primaryKey"`
-	Fullname     string    `gorm:"not null;size:256"`
-	Email        string    `gorm:"not null;unique;size:256"`
-	PasswordHash string    `gorm:"not null;size:256"`
-	Salt         string    `gorm:"not null;size:32"`
-	Created      time.Time `gorm:"autoCreateTime:milli"`
-	Updated      time.Time `gorm:"autoUpdateTime:milli"`
+	UUID            string    `gorm:"primaryKey" form:"-"`
+	Fullname        string    `gorm:"not null;size:256" form:"fullname" validate:"required,min=1,max=256"`
+	Email           string    `gorm:"not null;unique;size:256" form:"email" validate:"required,min=4,max=256,email"`
+	Password        string    `gorm:"-" form:"password" validate:"required,min=8,eqfield=PasswordConfirm"`
+	PasswordConfirm string    `gorm:"-" form:"password_confirm" validate:"required,min=8"`
+	PasswordHash    string    `gorm:"not null;size:256" form:"-"`
+	Salt            string    `gorm:"not null;size:32" form:"-"`
+	Created         time.Time `gorm:"autoCreateTime:milli" form:"-"`
+	Updated         time.Time `gorm:"autoUpdateTime:milli" form:"-"`
 }
 
 // GetConnectionDB return the database connection
