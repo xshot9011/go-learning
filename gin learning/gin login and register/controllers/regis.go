@@ -2,19 +2,52 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 	"unicode"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/gorm"
 )
 
 var dbConnect *gorm.DB
 
+const saltSize = 32
+
 // InitiateDB > We are creating an instance of our DB to avoid too many connections.
 func InitiateDB(db *gorm.DB) {
 	dbConnect = db
+}
+
+// User model for db
+type User struct {
+	UUID            string    `gorm:"primaryKey" form:"-"`
+	Fullname        string    `gorm:"not null;size:256" form:"fullname" validate:"required,min=1,max=256"`
+	Email           string    `gorm:"not null;unique;size:256" form:"email" validate:"required,min=4,max=256,email"`
+	Password        string    `gorm:"-" form:"password" validate:"required,min=8,eqfield=PasswordConfirm"`
+	PasswordConfirm string    `gorm:"-" form:"password_confirm" validate:"required,min=8"`
+	PasswordHash    string    `gorm:"not null;size:256" form:"-"`
+	Created         time.Time `gorm:"autoCreateTime:milli" form:"-"`
+	Updated         time.Time `gorm:"autoUpdateTime:milli" form:"-"`
+}
+
+// CreateuserTable create user table from struct
+func CreateuserTable(db *gorm.DB) {
+	isExist := db.Migrator().HasTable(&User{})
+	if !isExist {
+		db.Migrator().CreateTable(&User{})
+	}
+}
+
+// InsertUserToDatabase > insert validated data and tranform to appropriate form then into database
+func (user *User) InsertUserToDatabase() error {
+	result := dbConnect.Model(User{}).Create(user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 // Registration > make registration for user
@@ -45,6 +78,28 @@ func Registration(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errorMsg)
 		return
 	}
+	// check if the email is exist
+	var temp string
+	row := dbConnect.Table("users").Where("email = ?", user.Email).Select("UUID").Row()
+	row.Scan(&temp)
+	if len(temp) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "Email is already used",
+		})
+		return
+	}
+	// hash the password and sert salt to user
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+	user.PasswordHash = string(passwordHash)
+	now := time.Now().UTC()
+	user.Created = now
+	user.Updated = now
 	// Insert data to database
 	err = user.InsertUserToDatabase()
 	if err != nil {
@@ -55,7 +110,8 @@ func Registration(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"msg": "Successfully create account",
+		"msg":  "Successfully create account",
+		"data": user,
 	})
 }
 
@@ -89,15 +145,6 @@ func isSecurePassword(pass string) bool {
 	}
 
 	return true
-}
-
-// InsertUserToDatabase > insert validated data and tranform to appropriate form then into database
-func (user *User) InsertUserToDatabase() error {
-	result := dbConnect.Model(User{}).Create(user)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
 }
 
 /*

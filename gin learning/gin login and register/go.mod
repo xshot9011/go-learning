@@ -8,6 +8,7 @@ require (
 	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/go-pg/pg/v9 v9.2.0
 	github.com/google/uuid v1.1.2
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/gorm v1.20.0

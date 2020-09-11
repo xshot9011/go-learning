@@ -3,26 +3,12 @@ package models
 import (
 	"log"
 	"os"
-	"time"
 
 	"regisapp/controllers"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-// User model for db
-type User struct {
-	UUID            string    `gorm:"primaryKey" form:"-"`
-	Fullname        string    `gorm:"not null;size:256" form:"fullname" validate:"required,min=1,max=256"`
-	Email           string    `gorm:"not null;unique;size:256" form:"email" validate:"required,min=4,max=256,email"`
-	Password        string    `gorm:"-" form:"password" validate:"required,min=8,eqfield=PasswordConfirm"`
-	PasswordConfirm string    `gorm:"-" form:"password_confirm" validate:"required,min=8"`
-	PasswordHash    string    `gorm:"not null;size:256" form:"-"`
-	Salt            string    `gorm:"not null;size:32" form:"-"`
-	Created         time.Time `gorm:"autoCreateTime:milli" form:"-"`
-	Updated         time.Time `gorm:"autoUpdateTime:milli" form:"-"`
-}
 
 // GetConnectionDB return the database connection
 func GetConnectionDB() *gorm.DB {
@@ -34,17 +20,10 @@ func GetConnectionDB() *gorm.DB {
 	}
 	log.Printf("CONNECTED TO DATABASE")
 
-	createTable(db)
+	controllers.CreateuserTable(db)
 	controllers.InitiateDB(db)
 
 	return db
-}
-
-func createTable(db *gorm.DB) {
-	isExist := db.Migrator().HasTable(&User{})
-	if !isExist {
-		db.Migrator().CreateTable(&User{})
-	}
 }
 
 /*
