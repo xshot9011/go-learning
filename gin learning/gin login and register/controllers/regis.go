@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 	"time"
 	"unicode"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +16,8 @@ import (
 
 var dbConnect *gorm.DB
 
-const saltSize = 32
+// SecretKey = private key
+var secretKey = "?8Q.aXP#y;?4`}D`;rC~<u{bCsIq~O@YL)0wPQd=&8.LF\"v<q)A,lfp7Zy0@Kn*"
 
 // InitiateDB > We are creating an instance of our DB to avoid too many connections.
 func InitiateDB(db *gorm.DB) {
@@ -50,6 +53,26 @@ func (user *User) InsertUserToDatabase() error {
 	return nil
 }
 
+func (user *User) getAuthToken() (string, error) {
+	var err error
+	//Creating Access Token
+	os.Setenv("ACCESS_SECRET", secretKey) //this should be in an env file
+	atClaims := jwt.MapClaims{}
+	atClaims["authorized"] = true
+	atClaims["user_id"] = user.UUID
+	atClaims["exp"] = time.Now().Add(time.Hour * 12).Unix()
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+func (user *User) getSession() (string, error) {
+	return "", nil
+}
+
 // Registration > make registration for user
 func Registration(c *gin.Context) {
 	v := validator.New()
@@ -82,7 +105,7 @@ func Registration(c *gin.Context) {
 	var temp string
 	row := dbConnect.Table("users").Where("email = ?", user.Email).Select("UUID").Row()
 	row.Scan(&temp)
-	if len(temp) == 0 {
+	if len(temp) > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"msg": "Email is already used",
 		})
@@ -100,6 +123,14 @@ func Registration(c *gin.Context) {
 	now := time.Now().UTC()
 	user.Created = now
 	user.Updated = now
+	// create token if there's something fail break the program
+	token, err := user.getAuthToken()
+	if err != nil {
+		c.JSON(http.StatusCreated, gin.H{
+			"msg":   "Successfully create account",
+			"token": token,
+		})
+	}
 	// Insert data to database
 	err = user.InsertUserToDatabase()
 	if err != nil {
@@ -108,10 +139,10 @@ func Registration(c *gin.Context) {
 		})
 		return
 	}
-
+	// return token
 	c.JSON(http.StatusCreated, gin.H{
-		"msg":  "Successfully create account",
-		"data": user,
+		"msg":          "Successfully create account",
+		"access-token": token,
 	})
 }
 
