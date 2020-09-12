@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -69,8 +70,14 @@ func (user *User) getAuthToken() (string, error) {
 	return token, nil
 }
 
-func (user *User) getSession() (string, error) {
-	return "", nil
+func (user *User) setUserCookies(c *gin.Context, deviceCode string) error {
+	cookie, err := c.Cookie("strftime_zone")
+	if err != nil {
+		cookie = "NotSet"
+		c.SetCookie("strftime_zone", uuid.New().String(), 60*60*24, "/", "localhost", true, true)
+	}
+	log.Printf("Cookie value: %s \n", cookie)
+	return err
 }
 
 // Registration > make registration for user
@@ -127,7 +134,6 @@ func Registration(c *gin.Context) {
 	token, err := user.getAuthToken()
 	if err != nil {
 		c.JSON(http.StatusCreated, gin.H{
-			"msg":   "Successfully create account",
 			"token": token,
 		})
 	}
@@ -139,11 +145,8 @@ func Registration(c *gin.Context) {
 		})
 		return
 	}
-	// return token
-	c.JSON(http.StatusCreated, gin.H{
-		"msg":          "Successfully create account",
-		"access-token": token,
-	})
+	// set cookes with deviec code then save it to database
+	user.setUserCookies(c, "this is device code")
 }
 
 func isSecurePassword(pass string) bool {
