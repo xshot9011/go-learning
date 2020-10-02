@@ -31,7 +31,6 @@ you will learn
         4. Bitwise operations
 
             And, or, xor, and not
-
         5. Zero value is 0
         6. Cannot mix types in same family (uint16 + uint32 >> error)
     2. Floating point numbers
