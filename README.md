@@ -2,7 +2,7 @@
 
 เพื่อการเรียนรู้โครงสร้างและไวยกรณ์ภาษา c
 
-### run เพื่อดูผลเฉยๆ
+### run เพื่อดูผลเฉยๆ 
 
 ```bash
 go run [file_name.go]
@@ -62,13 +62,13 @@ switch var {
 
 ## Variable Type
 
-|Type|default value|
-|--|--|
-|bool|false|
-|int|0|
-|float|0.0|
-|string|""|
-|function|nil|
+| Type     | default value |
+|----------|---------------|
+| bool     | false         |
+| int      | 0             |
+| float    | 0.0           |
+| string   | ""            |
+| function | nil           |
 
 ### declaration and assign: normal
 
