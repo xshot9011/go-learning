@@ -98,3 +98,29 @@ func do_nothing(slices []string) []string {
 	return slices
 }
 ```
+
+Note: `If a function or variable is declared outside of a function, it is accessible from any other file in same package.`
+
+### Variable Scope
+
+- `Local` Variable defined within a function
+- `Package` Outside-of-function variable
+- `Global` Variable that defines a the outside function beginning with Capital letters, allowing it to be accessed by the entire package.
+
+### Single Package
+
+```
+.
+├── main.go  # Package main
+├── connector  # Package main
+└── validator  # Package main
+```
+
+### Multiple Packages
+
+```
+.
+├── main.go  # Package main
+└── module
+    └── auah.go  # Package auah
+```
