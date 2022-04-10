@@ -120,7 +120,8 @@ Note: `If a function or variable is declared outside of a function, it is access
 
 ```
 .
-├── main.go  # Package main
+├── main.go  # Package main -> Import <module_name>/
+├── go.mod
 └── module
     └── auah.go  # Package auah
 ```
