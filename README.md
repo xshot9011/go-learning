@@ -67,6 +67,30 @@ func main() {
 	movies = append(movies, "King3")
 	fmt.Printf("Movies: %v\n", movies)
 
+    // Map
+    var sli []string
+    var _ map[string]string  // to create empty map
+    var _ = make(map[string]string)  // to create empty map
+    var _ = []string{}
+    // var _ = []map[string]string{}  // {} is use to create empty list, won't work
+    var _ = make([]map[string]string, 0) // Create a empty list of map
+    _["firstName"] = "Doggy"
+
+	type User struct {
+		 firstName string
+		 lastName string
+	}
+	var _ = make([]User, 0)
+
+	// Concurrency
+	// go <functionName>(...)  // Create a goroutine (lightweight thread managed by Go runtime)
+	// The issue is that when the main trace is complete, the goroutine will not be entirely completed.
+	// waitGroup
+  // .Add(<number>) Set the number of waiting goroutine.
+  // .Wait() Block Until the counter of the goroutine reaches zero
+  // .Done() Eliminate the counter from the goroutine.
+  // Go provides channels for communication between goroutine (lw thread)
+
 	// Loop
 	for index, movie := range movies {
 		fmt.Printf("Movie %v: %v\n", index, movie)
