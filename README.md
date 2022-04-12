@@ -54,6 +54,7 @@ func main() {
 	fmt.Printf("The message address is: %p, containe value: %s\n", &message, message)
 
 	// Arrays and slices
+	// Slices retain the element's address.
 	var books [50]string
 	books[0] = "nano"
 	books[49] = "The last emp"
@@ -68,6 +69,7 @@ func main() {
 	fmt.Printf("Movies: %v\n", movies)
 
     // Map
+	// Map retain the element's address.
     var sli []string
     var _ map[string]string  // to create empty map
     var _ = make(map[string]string)  // to create empty map
