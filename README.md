@@ -2,6 +2,18 @@
 
 - Based on version 1.18 **
 
+## Go command
+
+- Download package
+
+```bash
+go get <url>
+go get <url>@none
+go clean -i <url>
+go clean -modcache
+go mod tidy
+```
+
 ## Go workspace
 
 `gopls` support both Go module and GOPATH mode
